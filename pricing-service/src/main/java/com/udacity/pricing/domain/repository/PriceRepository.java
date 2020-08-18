@@ -1,10 +1,10 @@
 package com.udacity.pricing.domain.repository;
 
 import com.udacity.pricing.domain.model.Price;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PriceRepository  extends JpaRepository<Price, Long> {
+public interface PriceRepository  extends PagingAndSortingRepository<Price, Long> {
 
 }

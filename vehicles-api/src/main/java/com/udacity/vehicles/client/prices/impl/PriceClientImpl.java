@@ -1,9 +1,11 @@
 package com.udacity.vehicles.client.prices.impl;
 
+import com.netflix.discovery.EurekaClient;
 import com.udacity.vehicles.client.prices.PriceClient;
 import com.udacity.vehicles.client.prices.dto.Price;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -17,9 +19,11 @@ public class PriceClientImpl implements PriceClient {
 
     private final WebClient client;
 
+    @Autowired
     public PriceClientImpl(WebClient pricing) {
         this.client = pricing;
     }
+
 
     // In a real-world application we'll want to add some resilience
     // to this method with retries/CB/failover capabilities

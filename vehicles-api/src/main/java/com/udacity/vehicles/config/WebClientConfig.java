@@ -1,8 +1,12 @@
 package com.udacity.vehicles.config;
 
+import com.netflix.appinfo.InstanceInfo;
+import com.netflix.discovery.EurekaClient;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,16 +20,24 @@ import reactor.netty.http.client.HttpClient;
 
 @Configuration
 public class WebClientConfig {
+    private final Logger LOG = LoggerFactory.getLogger(WebClientConfig.class);
     private final String mapsServiceUrl;
-    private final String pricingServiceUrl;
+
+    @Autowired
+    private EurekaClient discoveryClient;
 
     @Autowired
     public WebClientConfig(
-            @Value("${maps.endpoint}") String mapsEndpoint,
-            @Value("${pricing.endpoint}") String pricingEndpoint) {
+            @Value("${maps.endpoint}") String mapsEndpoint) {
         mapsServiceUrl = mapsEndpoint;
-        pricingServiceUrl = pricingEndpoint;
     }
+
+    private String getPricingServiceUrl() {
+        InstanceInfo instance = discoveryClient.getNextServerFromEureka("PRICING-SERVICE", false);
+        LOG.info(instance.getHomePageUrl());
+        return instance.getHomePageUrl();
+    }
+
 
     /**
      * Web Client for the maps (location) API
@@ -42,7 +54,7 @@ public class WebClientConfig {
      */
     @Bean(name = "pricing")
     WebClient webClientPricing() {
-        return getWebClient(pricingServiceUrl);
+        return getWebClient(this.getPricingServiceUrl());
     }
 
     private WebClient getWebClient(String serviceUrl) {
