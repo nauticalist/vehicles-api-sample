@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,7 +17,7 @@ import com.udacity.vehicles.domain.Location;
 import com.udacity.vehicles.domain.car.Car;
 import com.udacity.vehicles.domain.car.Details;
 import com.udacity.vehicles.domain.manufacturer.Manufacturer;
-import com.udacity.vehicles.service.CarService;
+import com.udacity.vehicles.service.impl.CarServiceImpl;
 import java.net.URI;
 import java.util.Collections;
 import org.junit.Before;
@@ -50,7 +49,7 @@ public class CarControllerTest {
     private JacksonTester<Car> json;
 
     @MockBean
-    private CarService carService;
+    private CarServiceImpl carServiceImpl;
 
     @MockBean
     private PriceClient priceClient;
@@ -65,9 +64,9 @@ public class CarControllerTest {
     public void setup() {
         Car car = getCar();
         car.setId(1L);
-        given(carService.save(any())).willReturn(car);
-        given(carService.findById(any())).willReturn(car);
-        given(carService.list()).willReturn(Collections.singletonList(car));
+        given(carServiceImpl.save(any())).willReturn(car);
+        given(carServiceImpl.findById(any())).willReturn(car);
+        given(carServiceImpl.list()).willReturn(Collections.singletonList(car));
     }
 
     /**
@@ -91,11 +90,11 @@ public class CarControllerTest {
      */
     @Test
     public void listCars() throws Exception {
-        /**
-         * TODO: Add a test to check that the `get` method works by calling
-         *   the whole list of vehicles. This should utilize the car from `getCar()`
-         *   below (the vehicle will be the first in the list).
-         */
+        mvc.perform(get("/cars"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .toString()
+                .contains("Impala");
 
     }
 
@@ -105,10 +104,11 @@ public class CarControllerTest {
      */
     @Test
     public void findCar() throws Exception {
-        /**
-         * TODO: Add a test to check that the `get` method works by calling
-         *   a vehicle by ID. This should utilize the car from `getCar()` below.
-         */
+        mvc.perform(get("/cars/1"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .toString()
+                .contains("Impala");
     }
 
     /**
@@ -117,11 +117,8 @@ public class CarControllerTest {
      */
     @Test
     public void deleteCar() throws Exception {
-        /**
-         * TODO: Add a test to check whether a vehicle is appropriately deleted
-         *   when the `delete` method is called from the Car Controller. This
-         *   should utilize the car from `getCar()` below.
-         */
+        mvc.perform(delete("/cars/1"))
+                .andExpect(status().isNoContent());
     }
 
     /**

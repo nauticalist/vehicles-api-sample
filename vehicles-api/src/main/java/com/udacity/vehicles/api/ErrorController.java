@@ -34,4 +34,3 @@ public class ErrorController extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, apiError, headers, HttpStatus.BAD_REQUEST, request);
     }
 }
-
